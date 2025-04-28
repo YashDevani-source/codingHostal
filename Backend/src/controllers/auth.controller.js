@@ -152,3 +152,25 @@ export const login = async (req, res) => {
     }
 
 }
+
+export const logout = async (req, res) => {
+    try {
+        res.clearCookie('jwt',{
+            httpOnly: true,
+            sameSite: 'strict',
+            secure: process.env.NODE_EMV !== 'developement'
+        })
+
+        return res.status(200).json({
+            success:true,
+            message:'User Logged out successfully'
+        })
+    } catch (error) {
+        console.error('Errort Logging out user', error)
+        return res.status(500).json({
+            success:false,
+            error,
+            error:'Error Logging out user'
+        })
+    }
+}
