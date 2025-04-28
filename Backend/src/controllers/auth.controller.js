@@ -45,7 +45,7 @@ export const register = async (req, res) => {
             return res.status(500).json({
                 success: false,
                 error,
-                message: 'Error while creating User'
+                error: 'Error while creating User'
             })
             
         }
@@ -80,7 +80,7 @@ export const register = async (req, res) => {
         return res.status(500).json({
             status: false,
             error,
-            message: 'Error while registring user'
+            error: 'Error while registring user'
         })
         
     }
