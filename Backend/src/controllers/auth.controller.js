@@ -86,4 +86,69 @@ export const register = async (req, res) => {
     }
 }
 
-export const login = async (req, res) => {}
+export const login = async (req, res) => {
+    const {email, password} = req.body
+
+    if(!email){
+        return res.status(400).json({
+            success: false,
+            message: 'All fields required'
+        })
+    }
+
+    try {
+      const user =  await db.user.findUniqe({
+            where:{
+                email
+            }
+        })
+
+        if(!user){
+            return res.status(400).json({
+                status: false,
+                message: 'User not found'
+            })
+        }
+
+        const isMatch = await bcrypt.compare(password,user.password)
+
+        if(!isMatch === true){
+            return res.status(400).json({
+                success: true,
+                message: 'Invalid creadientials'
+            })
+        }
+
+        const token = jwt.sign({id:user.id}, process.env.JWT_SECRET,{
+            expiresIn: '7d'
+        })
+
+        res.cookie('jwt', token, {
+            httpOnlt: true,
+            samesite: 'Strict',
+            secure: process.env.NODE_EMV !== 'developement',
+            maxAge: 1000*60*60*24*7
+        })
+
+        return res.status(200).json({
+            success:true,
+            message:'User Logged in successfully',
+            data:{
+                id:user.id,
+                role:user.role,
+                name:user.name,
+                email:user.email,
+                image:user.image
+            }
+        })
+
+    } catch (error) {
+        console.error('Error Logging in user:', error)
+        return res.status(500).json({
+            success:false,
+            error:'Error Logging in user',
+
+        })
+    }
+
+}
