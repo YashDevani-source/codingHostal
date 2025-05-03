@@ -61,5 +61,5 @@ export const createProblem = async (req, res) => {
     } catch (error) {
         
     }
-    // Save problem in db
+
 }
