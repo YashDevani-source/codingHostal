@@ -17,7 +17,7 @@ export const submitBatch = async (submissions) => {
 
     console.log("Submissions",data)
 
-    return data
+    return data // tokens in array [{token}, {token}, {token}]
 }
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve,ms))
