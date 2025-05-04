@@ -15,7 +15,7 @@ export const register = async (req, res) => {
         }
 
         try {
-          const existingUser =  await db.user.findUniqe({
+          const existingUser =  await db.user.findUnique({
                 where:{
                     email
                 }
@@ -97,7 +97,7 @@ export const login = async (req, res) => {
     }
 
     try {
-      const user =  await db.user.findUniqe({
+      const user =  await db.user.findUnique({
             where:{
                 email
             }
@@ -153,24 +153,48 @@ export const login = async (req, res) => {
 
 }
 
-export const logout = async (req, res) => {
+// export const logout = async (req, res) => {
+//     console.log('Logout route hit');
+
+//     try {
+
+//         res.clearCookie('jwt',{
+//             httpOnly: true,
+//             sameSite: 'strict',
+//             secure: process.env.NODE_ENV !== 'developement',
+//         })
+
+//         return res.status(200).json({
+//             success:true,
+//             message:'User Logged out successfully'
+//         })
+//     } catch (error) {
+//         console.error('Errort Logging out user', error)
+//         return res.status(500).json({
+//             success:false,
+//             error,
+//             error:'Error Logging out user'
+//         })
+//     }
+// }
+
+
+export const logout = async (req , res)=>{
     try {
-        res.clearCookie('jwt',{
-            httpOnly: true,
-            sameSite: 'strict',
-            secure: process.env.NODE_EMV !== 'developement'
+        res.clearCookie("jwt" , {
+            httpOnly:true,
+            sameSite:"strict",
+            secure:process.env.NODE_ENV !== "development",
         })
 
-        return res.status(200).json({
+        res.status(200).json({
             success:true,
-            message:'User Logged out successfully'
+            message:"User logged out successfully"
         })
     } catch (error) {
-        console.error('Errort Logging out user', error)
-        return res.status(500).json({
-            success:false,
-            error,
-            error:'Error Logging out user'
+        console.error("Error logging out user:", error);
+        res.status(500).json({
+            error:"Error logging out user"
         })
     }
 }
