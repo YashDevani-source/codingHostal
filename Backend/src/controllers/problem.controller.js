@@ -117,3 +117,36 @@ export const getAllProblems = async (req, res) => {
         })
     }
 }
+
+export const getProblemById = async (req, res) => {
+    const {id} = req.params
+
+    try {
+        const problem = await.db.findUnique({
+            where:{
+                id,
+            }
+        })
+
+
+        if(!problem){
+            return res.status(404).json({
+                success: false,
+                message: "Problem not found"
+            })
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Message Created Successfully"
+        })
+
+
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({
+            success: false,
+            error: "Error While Fetching Problem by id"
+        })
+    }
+}
