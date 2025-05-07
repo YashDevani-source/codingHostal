@@ -40,6 +40,8 @@ export const authMiddleware = async (req, res, next) => {
             })
         }
         req.user = user
+        console.log("User authenticated");
+        
         next();
     } catch (error) {
         console.error("Error authenticating user ", error)
@@ -65,6 +67,8 @@ export const checkAdmin = async (req, res , next) => {
             })
         }
 
+        console.log("Admin role checked");
+        
         next()
     } catch (error) {
         console.error("Error checking Admin role", error)

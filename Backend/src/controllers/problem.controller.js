@@ -122,7 +122,7 @@ export const getProblemById = async (req, res) => {
     const {id} = req.params
 
     try {
-        const problem = await.db.findUnique({
+        const problem = await db.problem.findUnique({
             where:{
                 id,
             }
@@ -138,7 +138,8 @@ export const getProblemById = async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            message: "Message Created Successfully"
+            message: "Message Created Successfully",
+            problem
         })
 
 
@@ -148,5 +149,117 @@ export const getProblemById = async (req, res) => {
             success: false,
             error: "Error While Fetching Problem by id"
         })
+    }
+}
+
+export const UpdatePorblem = async (req,res) => {
+     const {id} = req.params
+
+    try {
+        
+        const problem = await db.problem.findUnique({
+            where:{
+                id
+            }
+        })
+
+        if(!problem){
+            return res.status(400).json({
+                success:false,
+                message: 'problem not found to Update'
+            })
+        }
+
+        const {title, description, difficulty, tags, examples, constraints, testcases, codeSnippets, referenceSolutions} = req.body
+
+        if(!req.user.role === 'ADMIN'){
+            return res.status(403).json({
+                success: false,
+                error: 'You are not allowed to create a problem'
+            })
+        }
+
+        for(const [language, solutionCode] of Object.entries(referenceSolutions)){
+            const languageId = getJudge0LanguageId(language)
+
+            console.log(languageId);
+            
+
+            if(!language){
+                return res.status(400).json({error: `Language ${language} is not supported`})
+            }
+
+            const submissions = testcases.map(({input, output}) => ({
+                source_code:solutionCode,
+                language_id:languageId,
+                stdin:input,
+                expected_output:output,
+
+            }))
+
+
+            const submissionResult = await submitBatch(submissions)
+            console.log("submissionResult",submissionResult);
+            
+            const token = submissionResult.map((res) => res.token)
+            console.log("token",token);
+            
+            const results = await pollBatchResults(token)
+
+            console.log("Polled results",results);
+            
+
+            for (let i = 0; i<results.length; i++){
+                const result = results[i]
+
+                if(result.status.id !== 3){
+                    return res.status(400).json({error: `Testcase ${i + 1} faild for language ${language}`})
+                }
+            }
+        }
+
+        console.log("Updated Problem started");
+        
+
+
+        const updateProblem = await db.problem.update({
+            where:{
+                id
+            },
+            data:{
+                title,
+                description,
+                difficulty,
+                tags,
+                examples,
+                constraints,
+                testcases,
+                codeSnippets,
+                referenceSolutions,
+                user:{
+                    connect:{
+                        id: req.user.id
+                    }
+                }
+            }
+        })
+        console.log("Problem Updated Successfully"); 
+
+        return res.status(200).json({
+            success: true,
+            message: 'Problem Updated Successfully',
+            data: updateProblem
+        })
+
+
+
+    } catch (error) {
+
+        console.log(error)
+        return res.status(500).json({
+            success: false,
+            error: "Error While Updating Problem"
+        })
+
     }
 }
