@@ -117,7 +117,6 @@ model TestCaseResult {
 
 }
 
-
 model ProblemSolved {
   id String @id @default(uuid())
   userId String

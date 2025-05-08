@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser'
 
 import authRoutes from './routes/auth.routes.js'
 import problemRoutes from './routes/problems.routes.js'
+import executionRoutes from './routes/executeCode.routes.js';
 
 dotenv.config()
 
@@ -20,6 +21,7 @@ app.get('/', (req, res) => {
 
 app.use('/api/v1/auth', authRoutes)
 app.use('/api/v1/problems', problemRoutes )
+app.use('/api/v1/execute-code', executionRoutes)
 
 app.use((req, res) => {
     res.status(404).json({ message: 'Route not found' });
