@@ -263,3 +263,42 @@ export const UpdatePorblem = async (req,res) => {
 
     }
 }
+
+export const deleteProblemById = async (req, res) => {
+    const {id} = req.params
+
+    try {
+        const problem = await db.problem.findUnique({
+            where:{
+                id
+            }
+        })
+
+        if(!problem){
+            res.status(404).json({
+                success: false,
+                message: "Problem not found",
+            })
+        }
+
+        await db.problem.delete({
+            where:{
+                id
+            }
+        })
+
+        return res.status(200).json({
+            success: true,
+            message: "Problem Deleted Successfully"
+        })
+
+
+    } catch (error) {
+        return res.status(500).json({
+            success:false,
+            error,
+            message: "Error While Deleting Problem"
+        })
+    }
+}
+
