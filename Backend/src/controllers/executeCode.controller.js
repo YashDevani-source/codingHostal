@@ -4,6 +4,7 @@ import { db } from "../libs/db.libs.js"
 export const executeCode = async (req, res) => {
     try {
         const {source_code, language_id, stdin, expected_outputs, problemId} = req.body
+        const userId = req.user.id
 
         // 1. validate test cases
 
@@ -91,16 +92,30 @@ export const executeCode = async (req, res) => {
                 time: detailedResults.some((r) => r.time)
                     ? detailedResults.map((r) => r.time)
                     : null,
+                user:{
+                    connect:{
+                        id: userId
+                    }
+                },
+                problem:{
+                    connect:{
+                        id: problemId
+                    }
+                }
 
             }
         })
+
+        console.log(`Submission ID: ${submission.id}`)
+        console.log("Done");
+        
 
         // 7. If all Passed is true then mark problem as solved for the current user 
         if(allPassed){
             await db.problemSolved.upsert({
                 where:{
                     userId_problemId:{
-                        userID, problemId
+                        userId, problemId
                     }
                 },
                 update:{
