@@ -40,6 +40,30 @@ export const register = async (req, res) => {
                 }
             })
 
+            const token = jwt.sign({id:newUser.id} , process.env.JWT_SECRET , {
+            expiresIn:"7d"
+        })
+
+        res.cookie("jwt" , token , {
+            httpOnly:true,
+            sameSite:"strict",
+            secure:process.env.NODE_ENV !== "development",
+            maxAge:1000 * 60 * 60 * 24 * 7 // 7 days
+        })
+
+       return res.status(201).json({
+            success:true,
+            message:"User created successfully",
+            user:{
+                id:newUser.id,
+                email:newUser.email,
+                name:newUser.name,
+                role:newUser.role,
+                image:newUser.image
+            }})
+
+
+
         } catch (error) {
             console.error('Error while creating User', error)
             return res.status(500).json({
@@ -60,6 +84,8 @@ export const register = async (req, res) => {
             secure: process.env.NODE_EMV !== "development",
             maxAge: 1000*60*60*24*7
         })
+
+        res.data.user = user
 
         res.status(201).json({
             success: true,
@@ -133,7 +159,7 @@ export const login = async (req, res) => {
         return res.status(200).json({
             success:true,
             message:'User Logged in successfully',
-            data:{
+            user:{
                 id:user.id,
                 role:user.role,
                 name:user.name,
