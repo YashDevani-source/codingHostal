@@ -213,7 +213,7 @@ export const logout = async (req , res)=>{
             secure:process.env.NODE_ENV !== "development",
         })
 
-        res.status(200).json({
+       return res.status(200).json({
             success:true,
             message:"User logged out successfully"
         })
