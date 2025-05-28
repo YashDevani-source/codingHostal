@@ -1,6 +1,6 @@
 import { db } from "../libs/db.libs"
 
-export const createPlaylist = (req, res) => {
+export const createPlaylist = async (req, res) => {
     try {
         const {name, description} = req.body
         const userId = req.user.userId
@@ -28,7 +28,7 @@ export const createPlaylist = (req, res) => {
     }
 }
 
-export const getAllListDetails = (req, res) => {
+export const getAllListDetails = async (req, res) => {
     try {
         const playlists = db.playlist.findMany({
             where:{
@@ -58,7 +58,7 @@ export const getAllListDetails = (req, res) => {
     }
 }
 
-export const getPlayListDetails = (req, res) => {
+export const getPlayListDetails = async (req, res) => {
     const {playlistId} = req.params;
     try {
         const playlist = db.playlist.findUnique({
@@ -96,7 +96,7 @@ export const getPlayListDetails = (req, res) => {
     }
 }
 
-export const addProblemToPlaylist = (req, res) => {
+export const addProblemToPlaylist = async (req, res) => { 
     const [playlistId] = req.params
     const [problemIds] = req.body
 
@@ -132,6 +132,6 @@ export const addProblemToPlaylist = (req, res) => {
 
 }
 
-export const deletePlaylist = (req, res) => {}
+export const deletePlaylist = async (req, res) => {}
 
-export const removeProblemFromPlaylist = (req, res) => {}
+export const removeProblemFromPlaylist = async (req, res) => {}
