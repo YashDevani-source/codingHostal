@@ -96,7 +96,41 @@ export const getPlayListDetails = (req, res) => {
     }
 }
 
-export const addProblemToPlaylist = (req, res) => {}
+export const addProblemToPlaylist = (req, res) => {
+    const [playlistId] = req.params
+    const [problemIds] = req.body
+
+    try {
+        if(!Array.isArray(problemIds)){
+            return res.status(400).json({
+                success: false,
+                error: "Invalid or missing problem ids"
+            })
+        }
+        
+        // create records for each problems in the playlist
+        const problemsInPlaylist = await db.problemsInPlaylist.createMany({
+            data:problemIds.map((problemId)=>{
+                playlistId,
+                problemId
+            })
+        })
+
+        return res.status(200).json({
+            success: true,
+            message: "Problems added to playlist successfully",
+            problemsInPlaylist
+        })
+    } catch (error) {
+        console.log("Error adding problems to playlist", error);
+        res.status(500).json({
+            success: false,
+            error: "Error adding problems to playlist"
+        })
+        
+    }
+
+}
 
 export const deletePlaylist = (req, res) => {}
 
