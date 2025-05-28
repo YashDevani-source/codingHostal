@@ -8,6 +8,7 @@ import authRoutes from './routes/auth.routes.js'
 import problemRoutes from './routes/problems.routes.js'
 import executionRoutes from './routes/executeCode.routes.js';
 import submissionsRoutes from './routes/submissions.routes.js'
+import playlistRoutes from './routes/playlist.routes.js';
 
 dotenv.config()
 
@@ -31,6 +32,8 @@ app.use('/api/v1/auth', authRoutes)
 app.use('/api/v1/problems', problemRoutes )
 app.use('/api/v1/execute-code', executionRoutes)
 app.use('/api/v1/submission', submissionsRoutes)
+
+app.use("/api/v1/playlist", playlistRoutes);
 
 app.use((req, res) => {
     res.status(404).json({ message: 'Route not found' });
