@@ -29,7 +29,33 @@ export const createPlaylist = (req, res) => {
 }
 
 export const getAllListDetails = (req, res) => {
-    
+    try {
+        const playlists = db.playlist.findMany({
+            where:{
+                userId:req.user.userId
+            },
+            include:{
+                problems:{
+                    include:{
+                        problem:true
+                    }
+                }
+            }
+        })
+
+        res.status(200).json({
+            success: true,
+            message: "Playlists fetched successfully",
+            playlists:playlists
+        })
+    } catch (error) {
+        console.log("Error fetching playlists", error);
+        res.status(500).json({
+            success: false,
+            error: "Error fetching playlists"
+        })
+        
+    }
 }
 
 export const getPlayListDetails = (req, res) => {}
