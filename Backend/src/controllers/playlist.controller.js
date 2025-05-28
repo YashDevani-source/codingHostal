@@ -2,21 +2,21 @@ import { db } from "../libs/db.libs"
 
 export const createPlaylist = async (req, res) => {
     try {
-        const {name, description} = req.body
+        const { name, description } = req.body
         const userId = req.user.userId
 
         const playlist = db.playlist.create({
-            data:{
+            data: {
                 name,
                 description,
                 userId
             }
         })
 
-       return res.status(200).json({
+        return res.status(200).json({
             success: true,
             message: "Playlist created successfully",
-            playlist:playlist
+            playlist: playlist
         })
     } catch (error) {
         console.log("Error creating playlist", error);
@@ -24,20 +24,20 @@ export const createPlaylist = async (req, res) => {
             success: false,
             error: "Error creating playlist"
         })
-        
+
     }
 }
 
 export const getAllListDetails = async (req, res) => {
     try {
         const playlists = db.playlist.findMany({
-            where:{
-                userId:req.user.userId
+            where: {
+                userId: req.user.userId
             },
-            include:{
-                problems:{
-                    include:{
-                        problem:true
+            include: {
+                problems: {
+                    include: {
+                        problem: true
                     }
                 }
             }
@@ -46,7 +46,7 @@ export const getAllListDetails = async (req, res) => {
         res.status(200).json({
             success: true,
             message: "Playlists fetched successfully",
-            playlists:playlists
+            playlists: playlists
         })
     } catch (error) {
         console.log("Error fetching playlists", error);
@@ -54,36 +54,36 @@ export const getAllListDetails = async (req, res) => {
             success: false,
             error: "Error fetching playlists"
         })
-        
+
     }
 }
 
 export const getPlayListDetails = async (req, res) => {
-    const {playlistId} = req.params;
+    const { playlistId } = req.params;
     try {
         const playlist = db.playlist.findUnique({
-            where:{
-                id:playlistId,
-                userId:req.user.userId
+            where: {
+                id: playlistId,
+                userId: req.user.userId
             },
-            include:{
-                problems:{
-                    include:{
-                        problem:true
+            include: {
+                problems: {
+                    include: {
+                        problem: true
                     }
                 }
             }
         })
-        if(!playlist){
+        if (!playlist) {
             return res.status(404).json({
                 success: false,
                 error: "Playlist not found"
             })
         }
-       return res.status(200).json({
+        return res.status(200).json({
             success: true,
             message: "Playlist fetched successfully",
-            playlist:playlist
+            playlist: playlist
         })
 
     } catch (error) {
@@ -92,27 +92,27 @@ export const getPlayListDetails = async (req, res) => {
             success: false,
             error: "Error fetching playlist"
         })
-        
+
     }
 }
 
-export const addProblemToPlaylist = async (req, res) => { 
+export const addProblemToPlaylist = async (req, res) => {
     const [playlistId] = req.params
     const [problemIds] = req.body
 
     try {
-        if(!Array.isArray(problemIds)){
+        if (!Array.isArray(problemIds)) {
             return res.status(400).json({
                 success: false,
                 error: "Invalid or missing problem ids"
             })
         }
-        
+
         // create records for each problems in the playlist
         const problemsInPlaylist = await db.problemsInPlaylist.createMany({
-            data:problemIds.map((problemId)=>{
+            data: problemIds.map((problemId) => {
                 playlistId,
-                problemId
+                    problemId
             })
         })
 
@@ -127,22 +127,22 @@ export const addProblemToPlaylist = async (req, res) => {
             success: false,
             error: "Error adding problems to playlist"
         })
-        
+
     }
 
 }
 
 export const deletePlaylist = async (req, res) => {
-    const {playlistId} = req.params
+    const { playlistId } = req.params
 
     try {
         const deletePlaylist = await db.playlist.delete({
-            where:{
-                id:playlistId
+            where: {
+                id: playlistId
             }
         })
 
-       return res.status(200).json({
+        return res.status(200).json({
             success: true,
             message: "Playlist deleted successfully",
             deletePlaylist
@@ -153,8 +153,39 @@ export const deletePlaylist = async (req, res) => {
             success: false,
             error: "Error deleting playlist"
         })
-        
+
     }
 }
 
-export const removeProblemFromPlaylist = async (req, res) => {}
+export const removeProblemFromPlaylist = async (req, res) => {
+    const { playlistId } = req.params
+    const { problemIds } = req.body
+
+    try {
+        if (!Array.isArray(problemIds) || problemIds.length === 0) {
+            return res.status(400).json({
+                message: "Invalid or missing problem ids"
+            })
+        }
+        const deleteProblem = await db.problemsInPlaylist.deleteMany({
+            where: {
+                playlistId,
+                problemId: {
+                    in: problemIds
+                }
+            }
+        })
+        return res.status(200).json({
+            success: true,
+            message: "Problems removed from playlist successfully",
+            deleteProblem
+        })
+    } catch (error) {
+        console.log("Error removing problems from playlist", error.message);
+        res.status(500).json({
+            success: false,
+            error: "Error removing problems from playlist"
+        })
+
+    }
+}
