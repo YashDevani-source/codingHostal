@@ -1,4 +1,4 @@
-import { db } from "../libs/db.libs"
+import { db } from "../libs/db.libs.js"
 
 export const createPlaylist = async (req, res) => {
     try {

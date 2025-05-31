@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { axiosInstance } from "../lib/axios";
 import toast from "react-hot-toast";
-import { getProblemById } from "../../../Backend/src/controllers/problem.controller";
+
 
 
 export const useProblemStore = create((set) => ({
@@ -11,7 +11,7 @@ export const useProblemStore = create((set) => ({
     isProblemsLoading:false,
     isProblemLoading:false,
 
-    getAllProblem:async ()=>{
+    getAllProblems:async ()=>{
         try {
             set({isProblemsLoading:true})
             const res = await axiosInstance.get("/problems/get-all-problems")
